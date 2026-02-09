@@ -1,0 +1,32 @@
+{
+	"name": "rpg-archivist-api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"scripts": {
+		"dev": "tsx watch src/index.ts",
+		"clean": "del /s /q dist",
+		"build": "tsc",
+		"start": " npm run clean && npm run build && node .",
+		"startNoClean": "npm run build & node ."
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.6",
+		"dotenv": "^17.2.4",
+		"express": "^5.2.1",
+		"jsonwebtoken": "^9.0.3"
+	},
+	"devDependencies": {
+		"@types/cookie-parser": "^1.4.10",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.6",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/node": "^22.15.3",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3"
+	}
+}
