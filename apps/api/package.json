@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "tsx watch src/index.ts",
 		"clean": "del /s /q dist",
+		"test": "vitest",
 		"build": "tsc",
 		"start": " npm run clean && npm run build && node .",
 		"startNoClean": "npm run build & node ."
@@ -31,5 +32,6 @@
 		"consola": "^3.4.2",
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
+		"vitest": "^4.0.18"
 	}
 }
