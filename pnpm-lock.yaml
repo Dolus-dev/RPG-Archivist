@@ -26,6 +26,9 @@ importers:
       cors:
         specifier: ^2.8.6
         version: 2.8.6
+      discord-api-types:
+        specifier: ^0.38.39
+        version: 0.38.39
       dotenv:
         specifier: ^17.2.4
         version: 17.2.4
@@ -1136,6 +1139,9 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  discord-api-types@0.38.39:
+    resolution: {integrity: sha512-XRdDQvZvID1XvcFftjSmd4dcmMi/RL/jSy5sduBDAvCGFcNFHThdIQXCEBDZFe52lCNEzuIL0QJoKYAmRmxLUA==}
 
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
@@ -3128,6 +3134,8 @@ snapshots:
 
   detect-libc@2.1.2:
     optional: true
+
+  discord-api-types@0.38.39: {}
 
   doctrine@2.1.0:
     dependencies:

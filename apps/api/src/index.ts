@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
 import session from "express-session";
+import consola from "consola";
 
 const app = express();
 app.use(cookieParser());
@@ -30,17 +31,17 @@ const PORT = process.env.PORT || 4000;
 
 // Add environment variable checks here
 if (!process.env.SESSION_SECRET) {
-	console.warn(
+	consola.warn(
 		"Warning: SESSION_SECRET is not set. Using local development secret.",
 	);
 }
 if (!process.env.PORT) {
-	console.warn("Warning: PORT is not set. Using default port 4000.");
+	consola.warn("Warning: PORT is not set. Using default port 4000.");
 }
 
 async function startServer() {
 	app.listen(PORT, () => {
-		console.log(`Server is running on port ${PORT}`);
+		consola.log(`Server is running on port ${PORT}`);
 	});
 }
 
