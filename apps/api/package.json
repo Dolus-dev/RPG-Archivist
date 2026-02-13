@@ -17,6 +17,7 @@
 	"dependencies": {
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.6",
+		"discord-api-types": "^0.38.39",
 		"dotenv": "^17.2.4",
 		"express": "^5.2.1",
 		"express-session": "^1.19.0",
