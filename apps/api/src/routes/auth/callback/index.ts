@@ -15,7 +15,13 @@ const DISCORD_API_ENDPOINT = process.env.DISCORD_API_ENDPOINT;
 const REDIRECT_URL = process.env.DISCORD_AUTH_REDIRECT_URL;
 
 router.get("/callback", async (req, res) => {
-	const { code } = req.query;
+	const { code, state } = req.query;
+	const storedState = req.cookies["oauth_state"];
+
+	if (!state || state !== storedState) {
+		return res.status(400).json({ error: "Invalid state parameter" });
+	}
+
 	if (!code) {
 		return res.status(400).json({ error: "Code parameter not received" });
 	}
