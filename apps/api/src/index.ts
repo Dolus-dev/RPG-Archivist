@@ -45,7 +45,7 @@ app.use(
 		},
 	}),
 );
-const PORT = process.env.PORT || 4000;
+const SERVER_PORT = process.env.SERVER_PORT || 4000;
 
 // Add environment variable checks here
 if (!process.env.SESSION_SECRET) {
@@ -60,8 +60,8 @@ if (!process.env.PORT) {
 async function startServer() {
 	try {
 		await redisClient.connect();
-		app.listen(PORT, () => {
-			consola.log(`Server is running on port ${PORT}`);
+		app.listen(SERVER_PORT, () => {
+			consola.log(`Server is running on port ${SERVER_PORT}`);
 		});
 	} catch (error) {
 		consola.error("Failed to start server:", error);
