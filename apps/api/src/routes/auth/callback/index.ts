@@ -14,7 +14,7 @@ const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const DISCORD_API_ENDPOINT = process.env.DISCORD_API_ENDPOINT;
 const REDIRECT_URL = process.env.DISCORD_AUTH_REDIRECT_URL;
 
-router.get("/callback", async (req, res) => {
+router.get("/callback", async (req: Request, res: Response) => {
 	const { code, state } = req.query;
 	const storedState = req.cookies["oauth_state"];
 
