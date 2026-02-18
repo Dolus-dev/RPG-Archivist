@@ -4,6 +4,24 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 import session from "express-session";
 import consola from "consola";
+import { createClient } from "redis";
+
+export const redisClient = createClient({
+	username: process.env.REDIS_USERNAME || "default",
+	password: process.env.REDIS_PASSWORD || "",
+	socket: {
+		host: process.env.REDIS_HOST || "localhost",
+		port: Number(process.env.REDIS_PORT) || 6379,
+	},
+});
+
+redisClient.on("error", (err) => {
+	consola.error("Redis Client Error:", err);
+});
+
+redisClient.on("connect", () => {
+	consola.success("Connected to Memurai");
+});
 
 const app = express();
 app.use(cookieParser());
@@ -40,9 +58,15 @@ if (!process.env.PORT) {
 }
 
 async function startServer() {
-	app.listen(PORT, () => {
-		consola.log(`Server is running on port ${PORT}`);
-	});
+	try {
+		await redisClient.connect();
+		app.listen(PORT, () => {
+			consola.log(`Server is running on port ${PORT}`);
+		});
+	} catch (error) {
+		consola.error("Failed to start server:", error);
+		process.exit(1);
+	}
 }
 
 startServer();
