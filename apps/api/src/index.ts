@@ -5,6 +5,7 @@ import "dotenv/config";
 import session from "express-session";
 import consola from "consola";
 import { createClient } from "redis";
+import { DataSource } from "typeorm";
 
 export const redisClient = createClient({
 	username: process.env.REDIS_USERNAME || "default",
@@ -57,9 +58,25 @@ if (!process.env.PORT) {
 	consola.warn("Warning: PORT is not set. Using default port 4000.");
 }
 
+export const DATABASE = new DataSource({
+	type: "postgres",
+	host: process.env.DB_HOST || "localhost",
+	port: Number(process.env.DB_PORT) || 5432,
+	username: process.env.DB_USERNAME || "postgres",
+	password: process.env.DB_PASSWORD || "password",
+	database: process.env.DB_NAME || "RPG-Archivist",
+	entities: [],
+	synchronize: process.env.NODE_ENV !== "production",
+	dropSchema: process.env.NODE_ENV === "development",
+	logging: false,
+});
+
 async function startServer() {
 	try {
 		await redisClient.connect();
+		consola.success("Connected to Redis cache successfully");
+		await DATABASE.initialize();
+		consola.success("Database connection established successfully");
 		app.listen(SERVER_PORT, () => {
 			consola.log(`Server is running on port ${SERVER_PORT}`);
 		});
