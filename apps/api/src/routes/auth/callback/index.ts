@@ -6,6 +6,8 @@ import {
 	RESTPostOAuth2AccessTokenResult,
 } from "discord-api-types/v10";
 import FetchUser from "../../../lib/discord-interactions/fetch-user";
+import { DATABASE } from "../../..";
+import { User } from "../../../models/user";
 
 export const router = express.Router();
 
@@ -27,15 +29,36 @@ router.get("/callback", async (req: Request, res: Response) => {
 	}
 	try {
 		const authData = await FetchAccessToken(String(code));
+		consola.debug("Received access token from Discord:", authData);
 		const user = await FetchUser(authData.access_token);
 
-		GenerateSession();
+		consola.debug("Fetched user data from Discord:", user);
+		await RegisterUser(user, authData);
+		consola.debug("User registered/updated in database");
+		await GenerateSession(req, user, authData);
+		consola.debug("Session generated for user");
+		res.clearCookie("oauth_state");
+
+		consola.success(
+			`User ${user.username} (${user.id}) authenticated successfully`,
+		);
+		// Redirect to the frontend application after successful authentication
 	} catch (error) {
 		consola.error(error);
 	}
 });
 
-async function GenerateSession() {}
+async function GenerateSession(
+	req: Request,
+	user: APIUser,
+	AuthData: RESTPostOAuth2AccessTokenResult,
+) {
+	req.session.userId = user.id;
+	req.session.username = user.global_name || user.username;
+	req.session.accessToken = AuthData.access_token;
+	req.session.refreshToken = AuthData.refresh_token;
+	req.session.avatarHash = user.avatar || null;
+}
 
 async function FetchAccessToken(
 	code: string,
@@ -69,4 +92,24 @@ async function FetchAccessToken(
 async function RegisterUser(
 	user: APIUser,
 	AuthData: RESTPostOAuth2AccessTokenResult,
-) {}
+) {
+	try {
+		const users = DATABASE.getRepository(User);
+
+		await users.upsert(
+			{
+				id: user.id,
+				username: user.global_name || user.username,
+				avatarHash: user.avatar || null,
+				accessToken: AuthData.access_token,
+				refreshToken: AuthData.refresh_token,
+			},
+			{
+				conflictPaths: ["id"],
+				skipUpdateIfNoValuesChanged: true,
+			},
+		);
+	} catch (error) {
+		throw new Error(`Failed to register/update user in database: \n ${error}`);
+	}
+}
