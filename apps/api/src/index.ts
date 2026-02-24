@@ -6,6 +6,8 @@ import session from "express-session";
 import consola from "consola";
 import { createClient } from "redis";
 import { DataSource } from "typeorm";
+import { router as baseRouter } from "./routes/base-router";
+import { User } from "./models/user";
 
 export const redisClient = createClient({
 	username: process.env.REDIS_USERNAME || "default",
@@ -16,13 +18,14 @@ export const redisClient = createClient({
 	},
 });
 
-redisClient.on("error", (err) => {
-	consola.error("Redis Client Error:", err);
-});
+(async () => {
+	redisClient.on("error", (err) => consola.error("Redis Client Error", err));
+	redisClient.on("connect", () => consola.log("Connecting to Redis server"));
+	redisClient.on("ready", () => consola.success("Connected to Redis server"));
+	await redisClient.connect();
 
-redisClient.on("connect", () => {
-	consola.success("Connected to Memurai");
-});
+	await redisClient.ping();
+})();
 
 const app = express();
 app.use(cookieParser());
@@ -65,18 +68,18 @@ export const DATABASE = new DataSource({
 	username: process.env.DB_USERNAME || "postgres",
 	password: process.env.DB_PASSWORD || "password",
 	database: process.env.DB_NAME || "RPG-Archivist",
-	entities: [],
+	entities: [User],
 	synchronize: process.env.NODE_ENV !== "production",
 	dropSchema: process.env.NODE_ENV === "development",
 	logging: false,
 });
 
+app.use(baseRouter);
+
 async function startServer() {
 	try {
-		await redisClient.connect();
-		consola.success("Connected to Redis cache successfully");
 		await DATABASE.initialize();
-		consola.success("Database connection established successfully");
+
 		app.listen(SERVER_PORT, () => {
 			consola.log(`Server is running on port ${SERVER_PORT}`);
 		});
