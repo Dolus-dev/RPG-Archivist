@@ -5,9 +5,9 @@ import {
 	APIUser,
 	RESTPostOAuth2AccessTokenResult,
 } from "discord-api-types/v10";
-import FetchUser from "../../../lib/discord-interactions/fetch-user";
-import { DATABASE } from "../../..";
-import { User } from "../../../models/user";
+import FetchUser from "../../../../lib/discord-interactions/fetch-user";
+import { DATABASE } from "../../../..";
+import { User } from "../../../../models/user";
 
 export const router = express.Router();
 
@@ -16,9 +16,11 @@ const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const DISCORD_API_ENDPOINT = process.env.DISCORD_API_ENDPOINT;
 const REDIRECT_URL = process.env.DISCORD_AUTH_REDIRECT_URL;
 
-router.get("/callback", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
 	const { code, state } = req.query;
 	const storedState = req.cookies["oauth_state"];
+	console.debug("Returned state:", state);
+	console.debug("Stored state:", storedState);
 
 	if (!state || state !== storedState) {
 		return res.status(400).json({ error: "Invalid state parameter" });
@@ -42,9 +44,14 @@ router.get("/callback", async (req: Request, res: Response) => {
 		consola.success(
 			`User ${user.username} (${user.id}) authenticated successfully`,
 		);
+		return res.redirect(process.env.FRONTEND_URL || "http://localhost:3000");
 		// Redirect to the frontend application after successful authentication
 	} catch (error) {
 		consola.error(error);
+		return res.redirect(
+			`${process.env.FRONTEND_URL || "http://localhost:3000"}/login?error=AuthenticationFailed`,
+		);
+		// Redirect to the frontend login page with an error message.
 	}
 });
 
