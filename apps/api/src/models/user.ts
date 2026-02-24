@@ -15,17 +15,17 @@ export class User {
 	@Column({ type: "varchar", nullable: false })
 	refreshToken: string;
 
-	constructor(userData: {
-		id: string;
-		username: string;
-		avatarHash: string | null;
-		accessToken: string;
-		refreshToken: string;
-	}) {
-		this.id = userData.id;
-		this.username = userData.username;
-		this.avatarHash = userData.avatarHash;
-		this.accessToken = userData.accessToken;
-		this.refreshToken = userData.refreshToken;
+	constructor(
+		id: string,
+		username: string,
+		avatarHash: string | null,
+		accessToken: string,
+		refreshToken: string,
+	) {
+		this.id = id;
+		this.username = username;
+		this.avatarHash = avatarHash;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
 	}
 }
