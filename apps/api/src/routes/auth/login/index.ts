@@ -2,15 +2,18 @@ import express from "express";
 import crypto from "crypto";
 import "dotenv/config";
 import consola from "consola";
+import { router as LoginCallbackRouter } from "./callback";
 
 export const router = express.Router();
+router.use("/callback", LoginCallbackRouter);
 
-const CLIENT_ID = process.env.OAUTH_CLIENT_ID!;
+const CLIENT_ID = process.env.DISCORD_CLIENT_ID!;
+
 const REDIRECT_URI =
-	process.env.OAUTH_REDIRECT_URI || "http://localhost:4000/auth/callback";
+	process.env.OAUTH_REDIRECT_URI || "http://localhost:4000/auth/login/callback";
 const SCOPES = ["identify", "guilds", "guilds.members.read", "email"].join(" ");
 
-router.get("/login", async (req, res) => {
+router.get("/", async (req, res) => {
 	const state = crypto.randomBytes(16).toString("hex");
 	res.cookie("oauth_state", state, {
 		httpOnly: true,
