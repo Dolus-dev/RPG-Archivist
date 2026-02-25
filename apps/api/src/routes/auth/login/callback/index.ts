@@ -32,13 +32,12 @@ router.get("/", async (req: Request, res: Response) => {
 	try {
 		const authData = await FetchAccessToken(String(code));
 		consola.debug("Received access token from Discord:", authData);
-		const user = await FetchUser(authData.access_token);
+		const user = await FetchUser(authData.access_token, req);
 
-		consola.debug("Fetched user data from Discord:", user);
+		consola.debug("Fetched user data:", user);
 		await RegisterUser(user, authData);
 		consola.debug("User registered/updated in database");
 		await GenerateSession(req, user, authData);
-		consola.debug("Session generated for user");
 		res.clearCookie("oauth_state");
 
 		consola.success(
@@ -60,11 +59,18 @@ async function GenerateSession(
 	user: APIUser,
 	AuthData: RESTPostOAuth2AccessTokenResult,
 ) {
+	consola.debug("Generating session for user: ", user.id);
 	req.session.userId = user.id;
 	req.session.username = user.global_name || user.username;
 	req.session.accessToken = AuthData.access_token;
 	req.session.refreshToken = AuthData.refresh_token;
 	req.session.avatarHash = user.avatar || null;
+
+	await new Promise<void>((resolve, reject) => {
+		req.session.save((err) => (err ? reject(err) : resolve()));
+	});
+
+	consola.debug("Generated session for user: ", req.session.userId);
 }
 
 async function FetchAccessToken(
