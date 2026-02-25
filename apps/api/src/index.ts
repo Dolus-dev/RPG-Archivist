@@ -9,6 +9,8 @@ import { DataSource } from "typeorm";
 import { router as baseRouter } from "./routes/base-router";
 import { User } from "./models/user";
 
+consola.level = process.env.NODE_ENV === "production" ? 2 : 4; // Error in production, Debug in development
+
 export const redisClient = createClient({
 	username: process.env.REDIS_USERNAME || "default",
 	password: process.env.REDIS_PASSWORD || "",
@@ -44,7 +46,7 @@ app.use(
 		cookie: {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
-			sameSite: "strict",
+			sameSite: "lax",
 			maxAge: 1000 * 60 * 60 * 24, // 1 day
 		},
 	}),
@@ -78,7 +80,10 @@ app.use(baseRouter);
 
 async function startServer() {
 	try {
+		consola.log("Starting server...");
+		consola.log("Connecting to database...");
 		await DATABASE.initialize();
+		consola.success("Database connection established successfully");
 
 		app.listen(SERVER_PORT, () => {
 			consola.log(`Server is running on port ${SERVER_PORT}`);
