@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryColumn } from "typeorm";
+import { Campaign } from "./campaign";
 
 @Entity()
 export class User {
@@ -14,6 +15,10 @@ export class User {
 	accessToken: string;
 	@Column({ type: "varchar", nullable: false })
 	refreshToken: string;
+	@ManyToMany(() => Campaign, (campaign) => campaign.gameMasters)
+	gmCampaigns!: Campaign[];
+	@ManyToMany(() => Campaign, (campaign) => campaign.players)
+	playerCampaigns!: Campaign[];
 
 	constructor(
 		id: string,
