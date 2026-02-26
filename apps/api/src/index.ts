@@ -8,6 +8,8 @@ import { createClient } from "redis";
 import { DataSource } from "typeorm";
 import { router as baseRouter } from "./routes/base-router";
 import { User } from "./models/user";
+import { Guild } from "./models/guild";
+import { Campaign } from "./models/campaign";
 
 consola.level = process.env.NODE_ENV === "production" ? 2 : 4; // Error in production, Debug in development
 
@@ -70,7 +72,7 @@ export const DATABASE = new DataSource({
 	username: process.env.DB_USERNAME || "postgres",
 	password: process.env.DB_PASSWORD || "password",
 	database: process.env.DB_NAME || "RPG-Archivist",
-	entities: [User],
+	entities: [User, Guild, Campaign],
 	synchronize: process.env.NODE_ENV !== "production",
 	dropSchema: process.env.NODE_ENV === "development",
 	logging: false,

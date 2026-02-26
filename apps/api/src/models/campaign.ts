@@ -1,6 +1,8 @@
 import {
 	Column,
 	Entity,
+	JoinTable,
+	ManyToMany,
 	ManyToOne,
 	OneToMany,
 	PrimaryColumn,
@@ -11,11 +13,19 @@ import { User } from "./user";
 
 @Entity()
 export class Campaign {
-	@PrimaryGeneratedColumn({ type: "number" })
-	id!: number;
+	@PrimaryGeneratedColumn("uuid")
+	id!: string;
 
 	@ManyToOne(() => Guild, (guild) => guild.campaigns)
 	guild!: Guild;
+
+	@ManyToMany(() => User, (user) => user.gmCampaigns)
+	@JoinTable({ name: "campaign_gamemasters" })
+	gameMasters!: User[];
+
+	@ManyToMany(() => User, (user) => user.playerCampaigns)
+	@JoinTable({ name: "campaign_players" })
+	players!: User[];
 
 	constructor() {}
 }
