@@ -27,5 +27,7 @@ export class Campaign {
 	@JoinTable({ name: "campaign_players" })
 	players!: User[];
 
+	@ManyToMany(() => )
+
 	constructor() {}
 }

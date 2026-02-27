@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
 import { Campaign } from "./campaign";
+import { PlayerCharacter } from "./player-character";
 
 @Entity()
 export class User {
@@ -19,6 +20,9 @@ export class User {
 	gmCampaigns!: Campaign[];
 	@ManyToMany(() => Campaign, (campaign) => campaign.players)
 	playerCampaigns!: Campaign[];
+
+	@OneToMany(() => PlayerCharacter, (playerCharacter) => playerCharacter.user)
+	characters!: PlayerCharacter[];
 
 	constructor(
 		id: string,
