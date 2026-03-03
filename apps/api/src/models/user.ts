@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
 import { Campaign } from "./campaign";
-import { PlayerCharacter } from "./player-character";
+import { Character } from "./character";
 
 @Entity()
 export class User {
@@ -21,8 +21,8 @@ export class User {
 	@ManyToMany(() => Campaign, (campaign) => campaign.players)
 	playerCampaigns!: Campaign[];
 
-	@OneToMany(() => PlayerCharacter, (playerCharacter) => playerCharacter.user)
-	characters!: PlayerCharacter[];
+	@OneToMany(() => Character, (character) => character.author)
+	characters!: Character[];
 
 	constructor(
 		id: string,

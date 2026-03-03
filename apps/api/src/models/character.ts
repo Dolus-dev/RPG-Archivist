@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { User } from "./user";
 import { Campaign } from "./campaign";
+import { CharacterBackground } from "./character-background";
 
 @Entity()
 export class Character {
@@ -67,10 +68,7 @@ export class Character {
 	})
 	abilityScores!: AbilityScores;
 
-	@ManyToOne(
-		() => PlayerCharacterBackground,
-		(background) => background.character,
-	)
+	@ManyToOne(() => CharacterBackground, (background) => background.character)
 	background!: CharacterBackground;
 
 	@OneToMany(() => CharacterClass, (playerClass) => playerClass.character)
