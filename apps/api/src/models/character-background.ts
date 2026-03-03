@@ -8,6 +8,7 @@ import {
 import { Character } from "./character";
 import { User } from "./user";
 import { BackgroundGrant } from "./background-grants";
+import { BackgroundGrantChoiceGroup } from "./background-grant-choice-group";
 
 @Entity()
 export class CharacterBackground {
