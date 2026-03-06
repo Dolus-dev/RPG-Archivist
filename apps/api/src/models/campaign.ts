@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Guild } from "./guild";
 import { User } from "./user";
+import { Character } from "./character";
 
 @Entity()
 export class Campaign {
@@ -27,7 +28,7 @@ export class Campaign {
 	@JoinTable({ name: "campaign_players" })
 	players!: User[];
 
-	@ManyToMany(() => )
-
-	constructor() {}
+	@ManyToMany(() => Character, (character) => character.campaigns)
+	@JoinTable({ name: "campaign_characters" })
+	characters!: Character[];
 }
