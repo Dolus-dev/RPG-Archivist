@@ -145,7 +145,7 @@ export class EquipmentBonus extends Bonus {
 
 @ChildEntity(BonusType.CURRENCY)
 export class CurrencyBonus extends Bonus {
-	@OneToMany(() => CurrencyBonusDetail, (c) => c.currency, { cascade: true })
+	@OneToMany(() => CurrencyBonusDetail, (c) => c.bonus, { cascade: true })
 	currency!: CurrencyBonusDetail[];
 
 	declare quantity: null; // override to always be null since currency bonuses are always fixed
