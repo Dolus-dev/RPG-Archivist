@@ -26,6 +26,7 @@ import { DamageImmunityBonusDetail } from "./bonus-details/damage-immunity";
 import { ConditionImmunityBonusDetail } from "./bonus-details/condition-immunity";
 import { SenseBonusDetail } from "./bonus-details/sense";
 import { SpeedBonusDetail } from "./bonus-details/speed";
+import { BonusPackage } from "./bonus-package";
 
 export enum BonusType {
 	// Common types
@@ -55,7 +56,7 @@ export enum BonusType {
 }
 
 @Entity()
-@TableInheritance({ column: { type: "varchar", name: "type" } })
+@TableInheritance({ column: { type: "enum", name: "type", enum: BonusType } })
 export class Bonus {
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;
