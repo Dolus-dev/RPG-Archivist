@@ -94,4 +94,7 @@ export class Character {
 
 	@Column({ type: "decimal", precision: 4, scale: 2, nullable: true })
 	challengeRating!: number | null;
+
+	@Column({ type: "boolean", default: false })
+	isPublic!: boolean;
 }

@@ -1,5 +1,6 @@
 import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ArmorProficiencyBonus } from "../bonus";
+import { ArmorType } from "../armor-type";
 
 @Entity()
 export class ArmorBonusDetail {
