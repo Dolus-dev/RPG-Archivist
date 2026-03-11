@@ -1,11 +1,31 @@
 import {
+	BeforeInsert,
+	BeforeUpdate,
 	ChildEntity,
 	Column,
 	Entity,
+	ManyToOne,
 	OneToMany,
 	PrimaryGeneratedColumn,
 	TableInheritance,
 } from "typeorm";
+import { CurrencyBonusDetail } from "./bonus-details/currency";
+import { Race } from "./race";
+import { SkillBonusDetail } from "./bonus-details/skill";
+import { ToolBonusDetail } from "./bonus-details/tool";
+import { WeaponBonusDetail } from "./bonus-details/weapon";
+import { ArmorBonusDetail } from "./bonus-details/armor";
+import { LanguageBonusDetail } from "./bonus-details/language";
+import { FeatBonusDetail } from "./bonus-details/feat";
+import { FeatureBonusDetail } from "./bonus-details/feature";
+import { EquipmentBonusDetail } from "./bonus-details/equipment";
+import { AbilityScoreBonusDetail } from "./bonus-details/ability-score";
+import { SavingThrowProficiencyDetail } from "./bonus-details/saving-throws";
+import { DamageResistanceBonusDetail } from "./bonus-details/damage-resistance";
+import { DamageImmunityBonusDetail } from "./bonus-details/damage-immunity";
+import { ConditionImmunityBonusDetail } from "./bonus-details/condition-immunity";
+import { SenseBonusDetail } from "./bonus-details/sense";
+import { SpeedBonusDetail } from "./bonus-details/speed";
 
 export enum BonusType {
 	// Common types
@@ -45,71 +65,101 @@ export class Bonus {
 
 	@Column({ type: "int", nullable: true })
 	quantity!: number | null;
+
+	@ManyToOne(() => Race, (race) => race.bonuses, {
+		nullable: true,
+		onDelete: "CASCADE",
+	})
+	race!: Race | null;
+
+	@ManyToOne(() => CharacterBackground, (background) => background.bonuses, {
+		nullable: true,
+		onDelete: "CASCADE",
+	})
+	background!: CharacterBackground | null;
+
+	@ManyToOne(() => BonusPackage, (bonusPackage) => bonusPackage.bonuses, {
+		nullable: true,
+		onDelete: "CASCADE",
+	})
+	bonusPackage!: BonusPackage | null;
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	validateSource() {
+		const sources = [this.race, this.background, this.bonusPackage];
+		const nonNull = sources.filter((s) => s !== null && s !== undefined);
+		if (nonNull.length !== 1) {
+			throw new Error("A bonus must have exactly one source set");
+		}
+	}
 }
 
 @ChildEntity(BonusType.SKILL_PROFICIENCY)
 export class SkillProficiencyBonus extends Bonus {
-	@OneToMany(() => SkillProficiencyBonus, (s) => s.bonus, { cascade: true })
-	skills!: SkillProficiencyDetail[];
+	@OneToMany(() => SkillBonusDetail, (s) => s.bonus, { cascade: true })
+	skills!: SkillBonusDetail[];
 }
 
 @ChildEntity(BonusType.TOOL_PROFICIENCY)
 export class ToolProficiencyBonus extends Bonus {
-	@OneToMany(() => ToolProficiencyBonus, (t) => t.bonus, { cascade: true })
-	tools!: ToolProficiencyDetail[];
+	@OneToMany(() => ToolBonusDetail, (t) => t.bonus, { cascade: true })
+	tools!: ToolBonusDetail[];
 }
 
 @ChildEntity(BonusType.WEAPON_PROFICIENCY)
 export class WeaponProficiencyBonus extends Bonus {
-	@OneToMany(() => WeaponProficiencyBonus, (w) => w.bonus, { cascade: true })
-	weapons!: WeaponProficiencyDetail[];
+	@OneToMany(() => WeaponBonusDetail, (w) => w.bonus, { cascade: true })
+	weapons!: WeaponBonusDetail[];
 }
 
 @ChildEntity(BonusType.ARMOR_PROFICIENCY)
 export class ArmorProficiencyBonus extends Bonus {
-	@OneToMany(() => ArmorProficiencyBonus, (a) => a.bonus, { cascade: true })
-	armors!: ArmorProficiencyDetail[];
+	@OneToMany(() => ArmorBonusDetail, (a) => a.bonus, { cascade: true })
+	armors!: ArmorBonusDetail[];
 }
 
 @ChildEntity(BonusType.LANGUAGE)
 export class LanguageBonus extends Bonus {
-	@OneToMany(() => LanguageBonus, (l) => l.bonus, { cascade: true })
-	languages!: LanguageDetail[];
+	@OneToMany(() => LanguageBonusDetail, (l) => l.bonus, { cascade: true })
+	languages!: LanguageBonusDetail[];
 }
 
 @ChildEntity(BonusType.FEAT)
 export class FeatBonus extends Bonus {
-	@OneToMany(() => FeatBonus, (f) => f.bonus, { cascade: true })
-	feats!: FeatDetail[];
+	@OneToMany(() => FeatBonusDetail, (f) => f.bonus, { cascade: true })
+	feats!: FeatBonusDetail[];
 }
 
 @ChildEntity(BonusType.FEATURE)
 export class FeatureBonus extends Bonus {
-	@OneToMany(() => FeatureBonus, (f) => f.bonus, { cascade: true })
-	features!: FeatureDetail[];
+	@OneToMany(() => FeatureBonusDetail, (f) => f.bonus, { cascade: true })
+	features!: FeatureBonusDetail[];
 }
 
 @ChildEntity(BonusType.EQUIPMENT)
 export class EquipmentBonus extends Bonus {
-	@OneToMany(() => EquipmentBonus, (e) => e.bonus, { cascade: true })
-	equipment!: EquipmentDetail[];
+	@OneToMany(() => EquipmentBonusDetail, (e) => e.bonus, { cascade: true })
+	equipment!: EquipmentBonusDetail[];
 }
 
 @ChildEntity(BonusType.CURRENCY)
 export class CurrencyBonus extends Bonus {
-	@OneToMany(() => CurrencyBonus, (c) => c.bonus, { cascade: true })
-	currency!: CurrencyDetail[];
+	@OneToMany(() => CurrencyBonusDetail, (c) => c.currency, { cascade: true })
+	currency!: CurrencyBonusDetail[];
+
+	declare quantity: null; // override to always be null since currency bonuses are always fixed
 }
 
 @ChildEntity(BonusType.ABILITY_SCORE)
 export class AbilityScoreBonus extends Bonus {
-	@OneToMany(() => AbilityScoreBonus, (a) => a.bonus, { cascade: true })
-	abilityScores!: AbilityScoreDetail[];
+	@OneToMany(() => AbilityScoreBonusDetail, (a) => a.bonus, { cascade: true })
+	abilityScores!: AbilityScoreBonusDetail[];
 }
 
 @ChildEntity(BonusType.SAVING_THROW_PROFICIENCY)
 export class SavingThrowProficiencyBonus extends Bonus {
-	@OneToMany(() => SavingThrowProficiencyBonus, (s) => s.bonus, {
+	@OneToMany(() => SavingThrowProficiencyDetail, (s) => s.bonus, {
 		cascade: true,
 	})
 	savingThrows!: SavingThrowProficiencyDetail[];
@@ -117,30 +167,34 @@ export class SavingThrowProficiencyBonus extends Bonus {
 
 @ChildEntity(BonusType.DAMAGE_RESISTANCE)
 export class DamageResistanceBonus extends Bonus {
-	@OneToMany(() => DamageResistanceBonus, (d) => d.bonus, { cascade: true })
-	damageResistances!: DamageResistanceDetail[];
+	@OneToMany(() => DamageResistanceBonusDetail, (d) => d.bonus, {
+		cascade: true,
+	})
+	damageResistances!: DamageResistanceBonusDetail[];
 }
 
 @ChildEntity(BonusType.DAMAGE_IMMUNITY)
 export class DamageImmunityBonus extends Bonus {
-	@OneToMany(() => DamageImmunityBonus, (d) => d.bonus, { cascade: true })
-	damageImmunities!: DamageImmunityDetail[];
+	@OneToMany(() => DamageImmunityBonusDetail, (d) => d.bonus, { cascade: true })
+	damageImmunities!: DamageImmunityBonusDetail[];
 }
 
 @ChildEntity(BonusType.CONDITION_IMMUNITY)
 export class ConditionImmunityBonus extends Bonus {
-	@OneToMany(() => ConditionImmunityBonus, (c) => c.bonus, { cascade: true })
-	conditionImmunities!: ConditionImmunityDetail[];
+	@OneToMany(() => ConditionImmunityBonusDetail, (c) => c.bonus, {
+		cascade: true,
+	})
+	conditionImmunities!: ConditionImmunityBonusDetail[];
 }
 
 @ChildEntity(BonusType.SENSE)
 export class SenseBonus extends Bonus {
-	@OneToMany(() => SenseBonus, (s) => s.bonus, { cascade: true })
-	senses!: SenseDetail[];
+	@OneToMany(() => SenseBonusDetail, (s) => s.bonus, { cascade: true })
+	senses!: SenseBonusDetail[];
 }
 
 @ChildEntity(BonusType.SPEED)
 export class SpeedBonus extends Bonus {
-	@OneToMany(() => SpeedBonus, (s) => s.bonus, { cascade: true })
-	speeds!: SpeedDetail[];
+	@OneToMany(() => SpeedBonusDetail, (s) => s.bonus, { cascade: true })
+	speeds!: SpeedBonusDetail[];
 }
