@@ -11,6 +11,13 @@ import {
 import { Guild } from "./guild";
 import { User } from "./user";
 import { Character } from "./character";
+import { GameSystem } from "./game-system";
+
+export enum ProgressionType {
+	XP = "xp",
+	MILESTONE = "milestone",
+	CUSTOM = "custom",
+}
 
 @Entity()
 export class Campaign {
@@ -31,4 +38,17 @@ export class Campaign {
 	@ManyToMany(() => Character, (character) => character.campaigns)
 	@JoinTable({ name: "campaign_characters" })
 	characters!: Character[];
+
+	@Column({
+		type: "enum",
+		enum: ProgressionType,
+		default: ProgressionType.MILESTONE,
+	})
+	progressionType!: ProgressionType;
+
+	@ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
+	gameSystem!: GameSystem;
+
+	@Column({ type: "boolean", default: false })
+	isPublic!: boolean;
 }

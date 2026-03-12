@@ -6,6 +6,7 @@ import {
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user";
+import { GameSystem } from "./game-system";
 
 export enum RaceSize {
 	Tiny = "tiny",
@@ -49,6 +50,9 @@ export class Race {
 		onDelete: "CASCADE",
 	})
 	author!: User;
+
+	@ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
+	gameSystem!: GameSystem;
 
 	@OneToMany(() => RaceBonus, (bonus) => bonus.race)
 	bonuses!: RaceBonus[];

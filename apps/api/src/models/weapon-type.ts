@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user";
+import { GameSystem } from "./game-system";
 @Entity()
 export class WeaponType {
 	@PrimaryGeneratedColumn("uuid")
@@ -19,4 +20,7 @@ export class WeaponType {
 
 	@ManyToOne(() => User, { nullable: true, onDelete: "SET NULL" })
 	author!: User | null;
+
+	@ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
+	gameSystem!: GameSystem;
 }

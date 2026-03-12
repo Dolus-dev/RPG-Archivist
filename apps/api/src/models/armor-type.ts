@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user";
+import { GameSystem } from "./game-system";
 
 @Entity()
 export class ArmorType {
@@ -20,4 +21,7 @@ export class ArmorType {
 
 	@Column({ type: "boolean", default: false })
 	isPublic!: boolean;
+
+	@ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
+	gameSystem!: GameSystem;
 }

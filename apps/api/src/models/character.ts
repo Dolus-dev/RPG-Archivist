@@ -9,8 +9,21 @@ import {
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { User } from "./user";
-import { Campaign } from "./campaign";
+import { Campaign, ProgressionType } from "./campaign";
 import { CharacterBackground } from "./character-background";
+import { GameSystem } from "./game-system";
+
+export enum Alignment {
+	LAWFUL_GOOD = "lawful-good",
+	NEUTRAL_GOOD = "neutral-good",
+	CHAOTIC_GOOD = "chaotic-good",
+	LAWFUL_NEUTRAL = "lawful-neutral",
+	TRUE_NEUTRAL = "true-neutral",
+	CHAOTIC_NEUTRAL = "chaotic-neutral",
+	LAWFUL_EVIL = "lawful-evil",
+	NEUTRAL_EVIL = "neutral-evil",
+	CHAOTIC_EVIL = "chaotic-evil",
+}
 
 @Entity()
 export class Character {
@@ -39,22 +52,14 @@ export class Character {
 	@Column({ type: "int", default: 1 })
 	level!: number;
 
+	@Column({ type: "int", default: 0, nullable: true })
+	experiencePoints!: number | null;
+
 	@Column({
 		type: "enum",
-		enum: [
-			`lawful-good`,
-			`neutral-good`,
-			`chaotic-good`,
-			`lawful-neutral`,
-			`true-neutral`,
-			`chaotic-neutral`,
-			`lawful-evil`,
-			`neutral-evil`,
-			`chaotic-evil`,
-		],
-		nullable: true,
+		enum: Alignment,
 	})
-	alignment!: string | null;
+	alignment!: Alignment;
 
 	@ManyToOne(() => Races, (race) => race.characters, {
 		nullable: true,
@@ -95,6 +100,19 @@ export class Character {
 	@Column({ type: "decimal", precision: 4, scale: 2, nullable: true })
 	challengeRating!: number | null;
 
+	// This is overridden if the character participates in a public campaign.
+	// Other members of the campaign where this character is participating in can see it as well.
 	@Column({ type: "boolean", default: false })
 	isPublic!: boolean;
+
+	@ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
+	gameSystem!: GameSystem;
+
+	// This is the preferred progression type for this character. It can be overridden by the campaign's progression type if the character participates in a campaign.
+	@Column({
+		type: "enum",
+		enum: ProgressionType,
+		default: ProgressionType.XP,
+	})
+	preferredProgressionType!: ProgressionType;
 }
