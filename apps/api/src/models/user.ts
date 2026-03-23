@@ -1,40 +1,41 @@
-import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
-import { Campaign } from "./campaign";
-import { Character } from "./character";
+import {
+	Column,
+	CreateDateColumn,
+	DeleteDateColumn,
+	Entity,
+	Index,
+	PrimaryColumn,
+	UpdateDateColumn,
+} from "typeorm";
 
-@Entity()
+@Entity({ name: "users" })
+@Index("idx_users_username", ["username"])
+@Index("idx_users_is_active", ["isActive"])
 export class User {
-	@PrimaryColumn({ type: "varchar", unique: true, nullable: false })
-	id: string;
+	@PrimaryColumn({ type: "varchar", unique: true, length: 32 })
+	discordId!: string;
 
-	@Column({ type: "varchar", nullable: false })
-	username: string;
+	@Column({ type: "varchar", length: 32 })
+	username!: string;
 
-	@Column({ type: "varchar", nullable: true })
-	avatarHash: string | null;
-	@Column({ type: "varchar", nullable: false })
-	accessToken: string;
-	@Column({ type: "varchar", nullable: false })
-	refreshToken: string;
-	@ManyToMany(() => Campaign, (campaign) => campaign.gameMasters)
-	gmCampaigns!: Campaign[];
-	@ManyToMany(() => Campaign, (campaign) => campaign.players)
-	playerCampaigns!: Campaign[];
+	@Column({ type: "varchar", length: 32, nullable: true })
+	displayName!: string | null;
 
-	@OneToMany(() => Character, (character) => character.author)
-	characters!: Character[];
+	@Column({ type: "varchar", nullable: true, length: 128 })
+	avatarHash!: string | null;
 
-	constructor(
-		id: string,
-		username: string,
-		avatarHash: string | null,
-		accessToken: string,
-		refreshToken: string,
-	) {
-		this.id = id;
-		this.username = username;
-		this.avatarHash = avatarHash;
-		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
-	}
+	@Column({ type: "boolean", default: true })
+	isActive!: boolean;
+
+	@Column({ type: "timestamptz", nullable: true })
+	lastLoginAt!: Date | null;
+
+	@CreateDateColumn({ type: "timestamptz" })
+	createdAt!: Date;
+
+	@UpdateDateColumn({ type: "timestamptz" })
+	updatedAt!: Date;
+
+	@DeleteDateColumn({ type: "timestamptz", nullable: true })
+	deletedAt!: Date | null;
 }

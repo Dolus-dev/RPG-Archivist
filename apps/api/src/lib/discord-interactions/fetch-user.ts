@@ -11,23 +11,25 @@ export default async function FetchUser(
 	consola.debug("Fetching user data with access token: ", accessToken);
 	consola.debug(
 		"Session data: ",
-		req.session.userId ? { userId: req.session.userId } : "No session userId",
+		req.session.userDiscordId
+			? { userId: req.session.userDiscordId }
+			: "No session userId",
 	);
 
-	if (req.session.userId) {
-		consola.debug("Session userId found: ", req.session.userId);
-		const key = "user:" + req.session.userId;
+	if (req.session.userDiscordId) {
+		consola.debug("Session userId found: ", req.session.userDiscordId);
+		const key = "user:" + req.session.userDiscordId;
 		const value = await redisClient.get(key);
 		if (value) {
 			user = JSON.parse(value) as APIUser;
-			consola.debug("Cache hit for user: ", req.session.userId);
+			consola.debug("Cache hit for user: ", req.session.userDiscordId);
 			return user;
 		} else {
 			user = await fetchUserFromDiscord(accessToken);
 			const key = "user:" + user.id;
 			consola.debug(
 				"Cache miss for user: ",
-				req.session.userId,
+				req.session.userDiscordId,
 				" - Fetched from Discord API",
 			);
 			// Cache user data in Redis for 15 minutes
@@ -35,7 +37,10 @@ export default async function FetchUser(
 				EX: 60 * 15, // 15 minutes
 			});
 
-			consola.debug("User data cached in Redis for user: ", req.session.userId);
+			consola.debug(
+				"User data cached in Redis for user: ",
+				req.session.userDiscordId,
+			);
 			return user;
 		}
 	} else {

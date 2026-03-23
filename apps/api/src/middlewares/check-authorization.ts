@@ -15,7 +15,7 @@ export const checkUserSession = (
 };
 
 function userSessionExists(req: Request): boolean {
-	const sessionExists = Boolean(req.session);
+	const sessionExists = Boolean(req.session.userDiscordId);
 	return sessionExists;
 }
 

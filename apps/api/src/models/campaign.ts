@@ -42,7 +42,7 @@ export class Campaign {
 	@Column({
 		type: "enum",
 		enum: ProgressionType,
-		default: ProgressionType.MILESTONE,
+		default: ProgressionType.XP,
 	})
 	progressionType!: ProgressionType;
 
