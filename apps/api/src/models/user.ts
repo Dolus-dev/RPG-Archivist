@@ -4,9 +4,13 @@ import {
 	DeleteDateColumn,
 	Entity,
 	Index,
+	OneToMany,
 	PrimaryColumn,
 	UpdateDateColumn,
+	ManyToMany,
 } from "typeorm";
+import { Character } from "./character";
+import { Campaign } from "./campaign";
 
 @Entity({ name: "users" })
 @Index("idx_users_username", ["username"])
@@ -26,6 +30,17 @@ export class User {
 
 	@Column({ type: "boolean", default: true })
 	isActive!: boolean;
+
+	@OneToMany(() => Character, (character) => character.author)
+	characters!: Character[];
+
+	@ManyToMany(() => Campaign, (campaign) => campaign.gameMasters, {
+		eager: false,
+	})
+	gmCampaigns!: Campaign[];
+
+	@ManyToMany(() => Campaign, (campaign) => campaign.players, { eager: false })
+	playerCampaigns!: Campaign[];
 
 	@Column({ type: "timestamptz", nullable: true })
 	lastLoginAt!: Date | null;

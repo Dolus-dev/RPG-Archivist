@@ -30,7 +30,7 @@ type AuthTokenData = {
 	expires_in: number;
 };
 
-const OAUTH_STATE_PATTERN = /^[a-f0-9]{16}$/;
+const OAUTH_STATE_PATTERN = /^[a-f0-9]{32}$/;
 const OAuthTokenSchema = z
 	.object({
 		access_token: z.string().min(1),
@@ -93,10 +93,12 @@ router.get("/", async (req: Request, res: Response) => {
 		consola.success(
 			`User ${discordUser.username} (${discordUser.id}) authenticated successfully`,
 		);
-		return res.redirect(FRONTEND_URL);
+		return res.status(302).redirect(FRONTEND_URL);
 	} catch (error) {
 		consola.error("OAuth callback failed:", error);
-		return res.redirect(`${FRONTEND_URL}/login?error=AuthenticationFailed`);
+		return res
+			.status(302)
+			.redirect(`${FRONTEND_URL}/login?error=AuthenticationFailed`);
 	}
 });
 

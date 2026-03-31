@@ -13,8 +13,10 @@ const REDIRECT_URI =
 	process.env.OAUTH_REDIRECT_URI || "http://localhost:4000/auth/login/callback";
 const SCOPES = ["identify", "guilds", "guilds.members.read", "email"].join(" ");
 
-router.get("/", async (req, res) => {
+router.post("/", async (req, res) => {
 	const state = crypto.randomBytes(16).toString("hex");
+
+	consola.debug("Generated OAuth state: ", state);
 	res.cookie("oauth_state", state, {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
@@ -34,5 +36,5 @@ router.get("/", async (req, res) => {
 		authUrl.toString(),
 	);
 
-	return res.redirect(authUrl.toString());
+	return res.status(302).redirect(authUrl.toString());
 });

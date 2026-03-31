@@ -11,7 +11,7 @@ import {
 import { Guild } from "./guild";
 import { User } from "./user";
 import { Character } from "./character";
-import { GameSystem } from "./game-system";
+// import { GameSystem } from "./game-system";
 
 export enum ProgressionType {
 	XP = "xp",
@@ -46,8 +46,8 @@ export class Campaign {
 	})
 	progressionType!: ProgressionType;
 
-	@ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
-	gameSystem!: GameSystem;
+	// @ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
+	// gameSystem!: GameSystem;
 
 	@Column({ type: "boolean", default: false })
 	isPublic!: boolean;

@@ -7,11 +7,15 @@ import {
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
+	Index,
+	CreateDateColumn,
+	UpdateDateColumn,
+	DeleteDateColumn,
+	JoinColumn,
 } from "typeorm";
 import { User } from "./user";
 import { Campaign, ProgressionType } from "./campaign";
-import { CharacterBackground } from "./character-background";
-import { GameSystem } from "./game-system";
+import { Race } from "./race";
 
 export enum Alignment {
 	LAWFUL_GOOD = "lawful-good",
@@ -25,59 +29,56 @@ export enum Alignment {
 	CHAOTIC_EVIL = "chaotic-evil",
 }
 
-@Entity()
+export enum CharacterType {
+	PlayerCharacter = "pc",
+	NonPlayerCharacter = "npc",
+}
+
+@Entity({ name: "characters" })
+@Index("idx_characters_name", ["name"])
+@Index("idx_characters_is_public", ["isPublic"])
+@Index("idx_characters_kind", ["kind"])
+@Index("idx_characters_author", ["author"])
 export class Character {
 	@PrimaryGeneratedColumn("uuid")
 	id!: string;
 
-	@ManyToOne(() => User, (user) => user.characters, {
-		nullable: false,
-		onDelete: "CASCADE",
-	})
+	@ManyToOne(() => User, { nullable: false, onDelete: "CASCADE" })
+	@JoinColumn({ name: "authorDiscordId", referencedColumnName: "discordId" })
 	author!: User;
 
-	@Column({ type: "enum", enum: ["npc", "pc"], default: "pc" })
-	kind!: string;
-
-	@ManyToMany(() => Campaign, (campaign) => campaign.heroes, {
-		nullable: true,
-		onDelete: "SET NULL",
-	})
-	@JoinTable({ name: "character_campaigns" })
+	@ManyToMany(() => Campaign, (campaign) => campaign.characters)
 	campaigns!: Campaign[];
 
-	@Column({ type: "varchar", nullable: false })
+	@Column({ type: "varchar", length: 100 })
 	name!: string;
+
+	@Column({
+		type: "enum",
+		enum: CharacterType,
+		default: CharacterType.PlayerCharacter,
+	})
+	kind!: CharacterType;
 
 	@Column({ type: "int", default: 1 })
 	level!: number;
 
-	@Column({ type: "int", default: 0, nullable: true })
-	experiencePoints!: number | null;
+	@ManyToOne(() => Race, { nullable: true, onDelete: "SET NULL" })
+	@JoinColumn({ name: "raceId" })
+	race!: Race | null;
+
+	@Column({ type: "int", default: 0 })
+	xp!: number;
 
 	@Column({
 		type: "enum",
-		enum: Alignment,
+		enum: ProgressionType,
+		default: ProgressionType.XP,
 	})
-	alignment!: Alignment;
+	preferredProgressionType!: ProgressionType;
 
-	@ManyToOne(() => Races, (race) => race.characters, {
-		nullable: true,
-		onDelete: "SET NULL",
-	})
-	race!: Races;
-
-	@OneToOne(() => AbilityScores, (abilityScores) => abilityScores.character, {
-		nullable: true,
-		onDelete: "SET NULL",
-	})
-	abilityScores!: AbilityScores;
-
-	@ManyToOne(() => CharacterBackground, (background) => background.character)
-	background!: CharacterBackground;
-
-	@OneToMany(() => CharacterClass, (playerClass) => playerClass.character)
-	classes!: CharacterClass[];
+	@Column({ type: "boolean", default: false })
+	isPublic!: boolean;
 
 	@Column({ type: "text", nullable: true })
 	appearance!: string | null;
@@ -100,19 +101,12 @@ export class Character {
 	@Column({ type: "decimal", precision: 4, scale: 2, nullable: true })
 	challengeRating!: number | null;
 
-	// This is overridden if the character participates in a public campaign.
-	// Other members of the campaign where this character is participating in can see it as well.
-	@Column({ type: "boolean", default: false })
-	isPublic!: boolean;
+	@CreateDateColumn({ type: "timestamptz" })
+	createdAt!: Date;
 
-	@ManyToOne(() => GameSystem, { nullable: false, onDelete: "RESTRICT" })
-	gameSystem!: GameSystem;
+	@UpdateDateColumn({ type: "timestamptz" })
+	updatedAt!: Date;
 
-	// This is the preferred progression type for this character. It can be overridden by the campaign's progression type if the character participates in a campaign.
-	@Column({
-		type: "enum",
-		enum: ProgressionType,
-		default: ProgressionType.XP,
-	})
-	preferredProgressionType!: ProgressionType;
+	@DeleteDateColumn({ type: "timestamptz" })
+	deletedAt!: Date | null;
 }

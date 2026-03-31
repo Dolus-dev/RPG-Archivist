@@ -13,6 +13,15 @@ import { Campaign } from "./models/campaign";
 
 import { KeyProvider } from "./lib/crypto/constants";
 import { UserAuthSession } from "./models/session";
+import {
+	BackgroundTraitLink,
+	ClassTraitLink,
+	RaceTraitLink,
+	Trait,
+	TraitVersion,
+} from "./models/trait";
+import { Character } from "./models/character";
+import { Race } from "./models/race";
 
 export const keyProvider = new KeyProvider();
 
@@ -94,7 +103,19 @@ export const DATABASE = new DataSource({
 	username: process.env.DB_USERNAME || "postgres",
 	password: process.env.DB_PASSWORD || "password",
 	database: process.env.DB_NAME || "RPG-Archivist",
-	entities: [User, UserAuthSession],
+	entities: [
+		User,
+		UserAuthSession,
+		Trait,
+		TraitVersion,
+		RaceTraitLink,
+		ClassTraitLink,
+		BackgroundTraitLink,
+		Character,
+		Guild,
+		Campaign,
+		Race,
+	],
 	synchronize: process.env.NODE_ENV !== "production",
 	dropSchema: process.env.NODE_ENV === "development",
 	logging: false,

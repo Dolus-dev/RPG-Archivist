@@ -2,7 +2,7 @@
 import { timingSafeEqual } from "crypto";
 import { NextFunction, Request, Response } from "express";
 
-export const checkUserSession = (
+export const checkAuthentication = (
 	req: Request,
 	res: Response,
 	next: NextFunction,
