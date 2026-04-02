@@ -138,3 +138,18 @@ async function createTraitWithInitialVersion(
 		return { trait, version };
 	});
 }
+
+const getQuerySchema = z.object({
+	name: z.string().min(1).optional().nullable().default(null),
+	pageSize: z.coerce.number().int().min(10).max(50).optional().default(25), // Should have a minimum of 25 items per page
+	pageNumber: z.coerce.number().int().min(1).default(1),
+	author: z.string().min(1).optional().nullable().default(null),
+	gameSystem: z.string().min(1).optional().nullable().default(null),
+});
+
+router.get("/", async (req, res) => {
+	const query = req.params;
+
+	// TODO: parse query params and then build a SQL query to reflect the filters in place
+	// Afterwards, call database and return fetched data after caching
+});
